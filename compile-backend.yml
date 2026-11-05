@@ -1,8 +1,5 @@
-name: Compile and Test Java Backend
-on:
-  push:
-    branches: [ main ]
-  pull_request:
+name: Compile and test Java backend
+on: [push, pull_request]
 permissions:
   contents: read
 jobs:
@@ -15,5 +12,9 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: maven
-      - name: Compile and test
-        run: mvn -B -ntp clean verify
+      - name: Navigate to backend and compile
+        run: |
+          cd app
+          ../mvnw -f ../pom.xml clean compile
+      - name: Test backend
+        run: ./mvnw test

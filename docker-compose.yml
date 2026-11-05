@@ -1,12 +1,12 @@
 services:
   db:
     image: mysql:8.4
-    restart: unless-stopped
     environment:
       MYSQL_DATABASE: smart_clinic
       MYSQL_USER: clinic
       MYSQL_PASSWORD: ${DB_PASSWORD:-clinic_dev_password}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_dev_password}
+    ports: ["3306:3306"]
     volumes:
       - mysql_data:/var/lib/mysql
       - ./sql/procedures.sql:/docker-entrypoint-initdb.d/02-procedures.sql:ro
@@ -17,11 +17,9 @@ services:
       retries: 30
   app:
     build: .
-    restart: unless-stopped
     ports: ["8080:8080"]
     depends_on:
-      db:
-        condition: service_healthy
+      db: {condition: service_healthy}
     environment:
       DB_URL: jdbc:mysql://db:3306/smart_clinic
       DB_USER: clinic
